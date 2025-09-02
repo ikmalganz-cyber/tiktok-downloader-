@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unduh Video TikTok Tanpa Watermark</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-pink-500 to-purple-600 p-6 text-white text-center shadow-lg">
+    <h1 class="text-2xl font-bold">Unduh Video TikTok Tanpa Watermark</h1>
+    <p class="text-sm">Mudah, cepat, gratis!</p>
+  </header>
+
+  <!-- Form -->
+  <main class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
+    <label for="url" class="block mb-2 font-semibold">Masukkan URL Video TikTok:</label>
+    <input type="text" id="url" placeholder="https://www.tiktok.com/..."
+           class="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-pink-500">
+    
+    <button onclick="downloadVideo()"
+            class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">
+      Proses Video
+    </button>
+
+    <!-- Hasil -->
+    <div id="result" class="mt-6 hidden">
+      <h2 class="font-semibold mb-3">Preview Video:</h2>
+
+      <!-- Thumbnail + Video -->
+      <div class="mb-4">
+        <img id="thumbnail" class="rounded-lg shadow-md mb-3 hidden" alt="Thumbnail Video">
+        <video id="previewVideo" controls class="w-full rounded-lg shadow-md hidden"></video>
+      </div>
+
+      <!-- Judul -->
+      <p id="title" class="font-semibold text-gray-700 mb-4"></p>
+
+      <!-- Link Download -->
+      <a id="downloadLink" href="#" target="_blank"
+         class="block bg-green-500 text-white py-2 px-4 rounded-lg text-center hover:bg-green-600 transition">
+        Download Video
+      </a>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-gray-600 mt-10 p-4">
+    <p>&copy; 2025 by <b>MALZZ</b></p>
+  </footer>
+
+  <script>
+    async function downloadVideo() {
+      const url = document.getElementById('url').value.trim();
+      const resultDiv = document.getElementById('result');
+      const downloadLink = document.getElementById('downloadLink');
+      const previewVideo = document.getElementById('previewVideo');
+      const thumbnail = document.getElementById('thumbnail');
+      const title = document.getElementById('title');
+
+      if (!url) {
+        alert("Masukkan URL TikTok terlebih dahulu!");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/ttdl?url=${encodeURIComponent(url)}`);
+        if (!res.ok) throw new Error("API error");
+
+        const data = await res.json();
+
+        if (data && data.download) {
+          resultDiv.classList.remove('hidden');
+
+          title.innerText = data.title || "Video TikTok";
+
+          if (data.thumbnail) {
+            thumbnail.src = data.thumbnail;
+            thumbnail.classList.remove('hidden');
+          }
+
+          if (data.download) {
+            previewVideo.src = data.download;
+            previewVideo.classList.remove('hidden');
+            downloadLink.href = data.download;
+          }
+
+        } else {
+          alert("Gagal mendapatkan link unduhan!");
+        }
+      } catch (err) {
+        alert("Terjadi kesalahan saat memproses video!");
+        console.error(err);
+      }
+    }
+  </script>
+
+</body>
+</html>
